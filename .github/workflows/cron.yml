@@ -1,0 +1,40 @@
+name: X Auto Bot Daily Post
+
+on:
+  schedule:
+    # 毎朝8:00 JST に実行（GitHub Actionsのcronは常にUTC基準のため23:00 UTCを指定）
+    - cron: '0 23 * * *'
+  workflow_dispatch:
+    # Actionsタブから手動実行できるようにする（動作確認用）
+    inputs:
+      theme:
+        description: '議論のテーマ（省略時はリポジトリ変数 DEFAULT_THEME を使用）'
+        required: false
+        type: string
+
+jobs:
+  post-tweet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run debate and post to X
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          DEFAULT_THEME: ${{ vars.DEFAULT_THEME }}
+        run: node index.js "${{ inputs.theme }}"

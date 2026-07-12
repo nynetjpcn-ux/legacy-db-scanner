@@ -1,0 +1,18 @@
+{
+  "name": "x-auto-bot",
+  "version": "1.0.0",
+  "description": "AI同士の議論からXへの自動投稿を生成・投稿するボット",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dry": "node index.js --dry-run"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "dotenv": "^16.4.5",
+    "openai": "^4.73.0",
+    "twitter-api-v2": "^1.18.2"
+  }
+}

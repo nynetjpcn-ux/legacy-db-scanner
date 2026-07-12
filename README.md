@@ -35,7 +35,7 @@ npm install
 
 これで `package.json` に書かれた以下のライブラリがすべてインストールされます。
 
-- `openai` … バズ分析AI(GPT)呼び出し用
+- `@google/genai` … バズ分析AI(Gemini)呼び出し用
 - `@anthropic-ai/sdk` … 専門知識AI(Claude)呼び出し用
 - `twitter-api-v2` … Xへの投稿用
 - `dotenv` … `.env` ファイルの読み込み用
@@ -43,14 +43,14 @@ npm install
 もし `package.json` を使わず個別にインストールしたい場合は次のコマンドでも同じです。
 
 ```bash
-npm install openai @anthropic-ai/sdk twitter-api-v2 dotenv
+npm install @google/genai @anthropic-ai/sdk twitter-api-v2 dotenv
 ```
 
 ## 3. APIキーの取得と設定
 
-### OpenAI APIキー
-1. https://platform.openai.com/api-keys にアクセスしてログイン
-2. 「Create new secret key」でキーを発行(`sk-...`)
+### Gemini APIキー
+1. https://aistudio.google.com/apikey にアクセスしてログイン
+2. 「Create API key」でキーを発行(`AIza...`)
 
 ### Anthropic APIキー
 1. https://console.anthropic.com/settings/keys にアクセスしてログイン
@@ -76,7 +76,7 @@ cp .env.example .env
 ```
 
 ```env
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+GEMINI_API_KEY=AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxx
 
 X_API_KEY=your-consumer-api-key
@@ -121,10 +121,10 @@ node index.js "AIエージェントの未来"
 ## 5. 仕組みの概要
 
 1. **議論フェーズ(`src/debate.js`)**
-   - `バズ分析AI`(OpenAI `gpt-4o-mini`)と`専門知識AI`(Anthropic `claude-sonnet-4-6`)が
+   - `バズ分析AI`(Gemini `gemini-2.5-flash`)と`専門知識AI`(Anthropic `claude-sonnet-4-6`)が
      お互いの発言を読みながら、指定テーマについて3往復議論します。
 2. **最適化フェーズ(`src/optimize.js`)**
-   - 議論の全文をOpenAIに渡し、「感情を動かす」または「保存したくなるほど有益」な
+   - 議論の全文をGeminiに渡し、「感情を動かす」または「保存したくなるほど有益」な
      140文字以内の投稿文を生成します。140文字を超えた場合は最大3回まで自動で短縮を再試行します。
 3. **投稿フェーズ(`src/postToX.js`)**
    - `twitter-api-v2` のOAuth 1.0aユーザーコンテキストを使い、生成した文章をXに投稿します。
@@ -134,11 +134,25 @@ node index.js "AIエージェントの未来"
 - `.env に以下の環境変数が設定されていません` → `.env` のキー名・値を再確認してください
 - Xへの投稿で `403 Forbidden` → アプリの権限が「Read and Write」になっているか、
   Access Token/Secretを権限変更後に再発行したか確認してください
-- OpenAI/Anthropicで `401` → APIキーが正しいか、利用枠(クレジット)が残っているか確認してください
+- Gemini/Anthropicで `401` / `403` → APIキーが正しいか、利用枠(無料枠/クレジット)が残っているか確認してください
 
 ## 7. モデルを変更したい場合
 
-- `src/debate.js` の `model: 'gpt-4o-mini'` / `model: 'claude-sonnet-4-6'`
-- `src/optimize.js` の `model: 'gpt-4o-mini'`
+- `src/debate.js` の `GEMINI_MODEL` 定数 / `model: 'claude-sonnet-4-6'`
+- `src/optimize.js` の `GEMINI_MODEL` 定数
 
 をそれぞれ好きなモデル名に書き換えてください。
+
+## 8. 自動実行(GitHub Actions)
+
+`.github/workflows/cron.yml` により、毎朝8:00(JST)に自動でこのスクリプトが実行され、
+Xに投稿されます。利用するには、リポジトリの **Settings > Secrets and variables > Actions** で
+以下を登録してください。
+
+**Secrets**(機密情報): `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `X_API_KEY`, `X_API_SECRET`,
+`X_ACCESS_TOKEN`, `X_ACCESS_SECRET`
+
+**Variables**(機密ではない設定値): `DEFAULT_THEME`(任意。省略時はコード側のデフォルト値を使用)
+
+登録後、**Actions** タブの `X Auto Bot Daily Post` ワークフローから
+**Run workflow** で手動実行して動作確認できます。

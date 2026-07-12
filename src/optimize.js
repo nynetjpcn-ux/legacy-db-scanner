@@ -1,7 +1,8 @@
-import OpenAI from 'openai';
+import { GoogleGenAI } from '@google/genai';
 
 const MAX_LENGTH = 140;
 const MAX_ATTEMPTS = 3;
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 const SYSTEM_PROMPT = `あなたはX(Twitter)の投稿最適化のプロです。
 与えられた「AI同士の議論」の内容をもとに、
@@ -36,24 +37,21 @@ function buildUserPrompt(theme, transcript, previousAttempt) {
  * 議論のトランスクリプトから、140文字以内の投稿文を生成する。
  * @returns {Promise<string>}
  */
-export async function optimizePost({ openaiApiKey, theme, transcript }) {
-  const openai = new OpenAI({ apiKey: openaiApiKey });
+export async function optimizePost({ geminiApiKey, theme, transcript }) {
+  const gemini = new GoogleGenAI({ apiKey: geminiApiKey });
 
   let candidate = '';
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const res = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        {
-          role: 'user',
-          content: buildUserPrompt(theme, transcript, attempt > 1 ? candidate : null),
-        },
-      ],
-      temperature: 0.9,
+    const res = await gemini.models.generateContent({
+      model: GEMINI_MODEL,
+      contents: buildUserPrompt(theme, transcript, attempt > 1 ? candidate : null),
+      config: {
+        systemInstruction: SYSTEM_PROMPT,
+        temperature: 0.9,
+      },
     });
 
-    candidate = res.choices[0].message.content.trim().replace(/^["']|["']$/g, '');
+    candidate = res.text.trim().replace(/^["']|["']$/g, '');
 
     if ([...candidate].length <= MAX_LENGTH) {
       return candidate;

@@ -15,14 +15,14 @@ async function main() {
   console.log('AI同士の議論を開始します...');
 
   const transcript = await runDebate({
-    openaiApiKey: config.openaiApiKey,
+    geminiApiKey: config.geminiApiKey,
     anthropicApiKey: config.anthropicApiKey,
     theme: finalTheme,
   });
 
   console.log('\n議論から投稿文を生成します...');
   const postText = await optimizePost({
-    openaiApiKey: config.openaiApiKey,
+    geminiApiKey: config.geminiApiKey,
     theme: finalTheme,
     transcript,
   });

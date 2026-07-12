@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 const REQUIRED_KEYS = [
-  'OPENAI_API_KEY',
+  'GEMINI_API_KEY',
   'ANTHROPIC_API_KEY',
   'X_API_KEY',
   'X_API_SECRET',
@@ -23,7 +23,7 @@ export function loadConfig({ requireTwitter = true } = {}) {
   }
 
   return {
-    openaiApiKey: process.env.OPENAI_API_KEY,
+    geminiApiKey: process.env.GEMINI_API_KEY,
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
     xApiKey: process.env.X_API_KEY,
     xApiSecret: process.env.X_API_SECRET,

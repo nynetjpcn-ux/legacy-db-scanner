@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import Anthropic from '@anthropic-ai/sdk';
 import { BUZZ_ANALYST_PERSONA, EXPERT_PERSONA } from './personas.js';
 
-const ROUNDS = 3; // 3往復 = バズ分析AI/専門知識AIがそれぞれ3回ずつ発言
+const ROUNDS = 2; // 2往復 = バズ分析AI/専門知識AIがそれぞれ2回ずつ発言
 const GEMINI_MODEL = 'gemini-2.0-flash';
 
 function formatTranscript(transcript) {

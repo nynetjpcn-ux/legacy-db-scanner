@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 
 const MAX_LENGTH = 140;
 const MAX_ATTEMPTS = 3;
-const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_MODEL = 'gemini-3.5-flash';
 
 const SYSTEM_PROMPT = `あなたはX(Twitter)の投稿最適化のプロです。
 与えられた「AI同士の議論」の内容をもとに、

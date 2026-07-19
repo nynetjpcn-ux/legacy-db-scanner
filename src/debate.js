@@ -3,7 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { BUZZ_ANALYST_PERSONA, EXPERT_PERSONA } from './personas.js';
 
 const ROUNDS = 3; // 3往復 = バズ分析AI/専門知識AIがそれぞれ3回ずつ発言
-const GEMINI_MODEL = 'gemini-1.5-pro';
+const GEMINI_MODEL = 'gemini-3.5-flash';
 
 function formatTranscript(transcript) {
   if (transcript.length === 0) return '(まだ発言はありません。あなたが最初の発言者です)';
